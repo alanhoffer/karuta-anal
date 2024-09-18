@@ -2,8 +2,8 @@ const sharp = require('sharp');
 const Tesseract = require('tesseract.js');
 const path = require('path');
 
-const cropImage = async (inputPath, region, index) => {
-  const outputImagePath = path.join(__dirname, `./assets/card_${index}.jpg`);
+const cropImage = async (inputPath, region, index, userIndex) => {
+  const outputImagePath = path.join(__dirname, `../assets/${userIndex}_card_${index}.jpg`);
   try {
     await sharp(inputPath)
       .extract(region)

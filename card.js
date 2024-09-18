@@ -5,11 +5,11 @@ const regions = [
   { left: 633, top: 367, width: 200, height: 20 }
 ];
 
-const getSmallestNumber = async (imagePath) => {
+const getSmallestNumber = async (imagePath, userIndex) => {
   const results = [];
   
   for (let i = 0; i < regions.length; i++) {
-    const croppedImagePath = await cropImage(imagePath, regions[i], i + 1);
+    const croppedImagePath = await cropImage(imagePath, regions[i], i + 1, userIndex);
     
     if (croppedImagePath) {
       const result = await processImage(croppedImagePath, i + 1);

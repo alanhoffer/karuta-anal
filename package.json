@@ -11,6 +11,7 @@
     "discord.js-selfbot-v13": "^3.3.0",
     "fs": "^0.0.1-security",
     "jimp": "^1.6.0",
+    "proxy-agent": "^6.4.0",
     "sharp": "^0.33.5",
     "tesseract.js": "^5.1.1"
   },

@@ -3,11 +3,10 @@ const { downloadImage } = require('./utils/downloadImage');
 const { getSmallestNumber } = require('./card');
 const { WebhookClient } = require('discord.js-selfbot-v13');
 
-// Variable para almacenar la última vez que se realizó una acción
 let lastActionTimestamp = 0;
 const cooldown = 10 * 60 * 1000; // 10 minutos en milisegundos
 
-const handleClientReady = async (client, config) => {
+const handleClientReady = async (client, config, index) => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   try {
@@ -38,7 +37,7 @@ const handleClientReady = async (client, config) => {
   }
 };
 
-const handleMessage = async (client, message, config) => {
+const handleMessage = async (client, message, config, index) => {
   const currentTimestamp = Date.now();
 
   if (message.content.includes(`<@${client.user.id}> took the`) || message.content.includes(`<@${client.user.id}> fought off`)) {
@@ -52,11 +51,10 @@ const handleMessage = async (client, message, config) => {
   }
 
   if (message.content.includes(`is dropping`)) {
-    // Verificar si el cooldown ha pasado
     if (currentTimestamp - lastActionTimestamp < cooldown) {
       const remainingTime = Math.ceil((cooldown - (currentTimestamp - lastActionTimestamp)) / 60000); // Tiempo restante en minutos
       console.log(`Cooldown activo. Esperando ${remainingTime} minutos antes de procesar la imagen.`);
-      
+
       if (config.channel) {
         await message.channel.send(`<@${client.user.id}>, you must wait ${remainingTime} minutes before grabbing another card.`);
       }
@@ -69,12 +67,12 @@ const handleMessage = async (client, message, config) => {
     if (message.attachments.size > 0) {
       try {
         const attachment = message.attachments.first();
-        const imagePath = path.join(__dirname, './assets/card_list.jpg');
+        const imagePath = path.join(__dirname, `./assets/user${client.user.id}_card_list.jpg`);
 
         await downloadImage(attachment.url, imagePath);
         console.log('Imagen descargada.');
 
-        const smallestNumber = await getSmallestNumber(imagePath);
+        const smallestNumber = await getSmallestNumber(imagePath, client.user.id);
         console.log(`Número más pequeño encontrado: ${smallestNumber}`);
 
         let reactionEmoji;
@@ -154,6 +152,10 @@ const getRandomUser = async (channel) => {
     console.error("Error al obtener los miembros del canal:", error);
     return "";
   }
+};
+
+const createWebhookClient = (config) => {
+  return new WebhookClient({ url: config.webhook.url });
 };
 
 module.exports = { handleClientReady, handleMessage };
