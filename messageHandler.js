@@ -29,7 +29,6 @@ const handleClientReady = async (client, config, index) => {
     };
 
     const delay = index * 10 * 60 * 1000; // 10 minutos por índice
-    
     setTimeout(async () => {
       try {
         await sendKdMessage(client, config, index);
@@ -40,6 +39,9 @@ const handleClientReady = async (client, config, index) => {
         console.error("Error en el envío del mensaje KD:", error);
       }
     }, delay);
+  } catch (error) {
+    console.error("Error al acceder al canal:", error);
+  }
 };
 
 const handleMessage = async (client, message, config, index) => {
