@@ -6,6 +6,7 @@ const { WebhookClient } = require('discord.js-selfbot-v13');
 let lastActionTimestamp = 0;
 const cooldown = 10 * 60 * 1000; // 10 minutos en milisegundos
 
+
 const handleClientReady = async (client, config, index) => {
   console.log(`Logged in as ${client.user.tag}!`);
 
@@ -27,14 +28,18 @@ const handleClientReady = async (client, config, index) => {
       }
     };
 
-    await sendKdMessage();
-    setInterval(async () => {
-      await sendKdMessage();
-    }, config.time.drop.delay + Math.floor(Math.random() * config.time.drop.random));
-
-  } catch (error) {
-    console.error("Error al acceder al canal:", error);
-  }
+    const delay = index * 10 * 60 * 1000; // 10 minutos por índice
+    
+    setTimeout(async () => {
+      try {
+        await sendKdMessage(client, config, index);
+        setInterval(async () => {
+          await sendKdMessage(client, config, index);
+        }, config.time.drop.delay + Math.floor(Math.random() * config.time.drop.random));
+      } catch (error) {
+        console.error("Error en el envío del mensaje KD:", error);
+      }
+    }, delay);
 };
 
 const handleMessage = async (client, message, config, index) => {
