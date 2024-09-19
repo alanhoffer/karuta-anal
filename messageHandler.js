@@ -28,18 +28,13 @@ const handleClientReady = async (client, config, index) => {
       }
     };
 
-    const delay = index * 10 * 60 * 1000; // 10 minutos por índice
-    setTimeout(async () => {
-      try {
-        await sendKdMessage(client, config, index);
-        setInterval(async () => {
-          await sendKdMessage(client, config, index);
-        }, config.time.drop.delay + Math.floor(Math.random() * config.time.drop.random));
-      } catch (error) {
-        console.error("Error en el envío del mensaje KD:", error);
-      }
-    }, delay);
-  } catch (error) {
+
+    setInterval(async () => {
+      await sendKdMessage(client, config, index);
+    }, config.time.drop.delay + Math.floor(Math.random() * config.time.drop.random));
+  }
+
+  catch (error) {
     console.error("Error al acceder al canal:", error);
   }
 };
@@ -53,22 +48,22 @@ const handleMessage = async (client, message, config, index) => {
         const webhookClient = createWebhookClient(config);
         webhookClient.send(message.content);
       }
+      lastActionTimestamp = currentTimestamp; // Actualizar el timestamp de la última acción
+
       console.log(`${client.user.tag} took the card`);
     }
   }
 
-  if (message.content.includes(`is dropping`)) {
+  if (message.content.includes(`is dropping`) || message.content.includes(`fought off <@${client.user.id}>`)) {
     if (currentTimestamp - lastActionTimestamp < cooldown) {
       const remainingTime = Math.ceil((cooldown - (currentTimestamp - lastActionTimestamp)) / 60000); // Tiempo restante en minutos
       console.log(`Cooldown activo. Esperando ${remainingTime} minutos antes de procesar la imagen.`);
 
       if (config.channel) {
-        await message.channel.send(`<@${client.user.id}>, you must wait ${remainingTime} minutes before grabbing another card.`);
+        //        await message.channel.send(`<@${client.user.id}>, you must wait ${remainingTime} minutes before grabbing another card.`);
       }
       return; // Salir si el cooldown no ha pasado
     }
-
-    lastActionTimestamp = currentTimestamp; // Actualizar el timestamp de la última acción
 
     console.log(`${client.user.tag} is dropping cards`);
     if (message.attachments.size > 0) {
@@ -100,7 +95,15 @@ const handleMessage = async (client, message, config, index) => {
 
         if (message.components.length > 0) {
           const row = message.components[0];
-          const button = row.components[smallestNumber - 1];
+          if (message.content.includes(`fought off <@${client.user.id}>`)) {
+            row.splice(smallestNumber - 1, 1);
+            const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
+
+            const button = row.components[randomNumber];
+          }
+          else {
+            const button = row.components[smallestNumber - 1];
+          }
 
           if (button) {
             try {
