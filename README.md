@@ -1,6 +1,6 @@
 ## karutabot
 
-(not working for buttons, only reactions)
+Now working for buttons and reactions
 
 
 
