@@ -17,7 +17,17 @@ Now working for buttons and reactions
       "id": "",
       "token": ""
     },
-    "time": {
+    "proxies": [ // Proxies to evade karuta bans
+      {
+        "host": "",
+        "port": 3128,
+        "auth": {
+          "username": "user1",
+          "password": "pass1"
+        }
+      }
+    ],
+      "time": {
       "drop": {
         "delay": 1800000, // How often should the bot drop cards (30min default)
         "random": 130000 // Adds random amount of time
